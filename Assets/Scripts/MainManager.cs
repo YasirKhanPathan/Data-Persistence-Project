@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -10,18 +12,23 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public TextMeshProUGUI bestScoreText;
     public Text ScoreText;
     public GameObject GameOverText;
-    
+
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
 
+    private string playerName;
+
     
     // Start is called before the first frame update
     void Start()
     {
+        SetBestScore();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -70,7 +77,19 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (MenuManager.instance.bestScore < m_Points)
+        {
+            MenuManager.instance.bestScore = m_Points;
+            MenuManager.instance.playerName = MenuManager.instance.newPlayerName;
+            MenuManager.instance.SavePlayerData(MenuManager.instance.bestScore);
+        }
+
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void SetBestScore()
+    {
+        bestScoreText.text = "Best Score : " + MenuManager.instance.playerName + " : " + MenuManager.instance.bestScore;
     }
 }
